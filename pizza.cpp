@@ -82,14 +82,23 @@ Pizza::Pizza(Pizza &copy){
     }
     cout<<"Press 0 to save it."<<endl;
     int a=1;
+    char x;
     while(a!=0){
-		if(!(cin>>a)){
+		if(!(cin>>a)){                      //checking that the user has entered a integer
 			cout<<"Invalid choice"<<endl;
 			cin.clear();
 			cin.ignore(1000,'\n');
 			a=1;
 			continue;
 		}
+    	if (cin.get(x)) {						//checking if user just entered integer
+        	if(x != '\n'){
+				cout<<"Invalid choice"<<endl;
+        		cin.clear();
+	    		cin.ignore(1000,'\n');
+				continue;
+			}
+    	}
 		if(a<7 && a>0)
 			ing[a-1]++;
 		else if(a==0)
@@ -116,10 +125,7 @@ Pizza::~Pizza(){
 Order::Order(string customer,Pizza *piz,int *drink){
     this->customer=customer;
     phead=piz;
-    drinks=new int[4];
-    for(int i=0;i<4;i++){
-		drinks[i]=drink[i];
-	}
+    drinks=drink;
     next=NULL;
 }
 
@@ -177,7 +183,20 @@ void OrderList::takeOrder(){
 		takeOrder();
         return;
 	}
+	char x;
+    if (cin.get(x)) {						//checking if user just entered integer
+        if(x != '\n'){
+			cout<<"Invalid choice"<<endl<<endl;
+        	cin.clear();
+	    	cin.ignore(1000,'\n');
+			takeOrder();
+			return;
+		}
+    }
+	
     if(type==0){
+    	cin.clear();
+	    cin.ignore(1000,'\n');
         mainmenu();
         return;
     }
@@ -202,10 +221,21 @@ void OrderList::takeOrder(){
     ptraverse=phead;
     cout<<"Enter the amount: ";
     
-    while(!(cin>>amount)){							//checking that the user has entered a integer
+    while(true){
+    	if(!(cin>>amount)){							//checking that the user has entered a integer
 		cout<<"Invalid amount, please try again: ";
 		cin.clear();
 		cin.ignore(1000,'\n');
+		continue;
+		} else if (cin.get(x)) {					//checking if user just entered integer
+        	if(x != '\n'){
+			cout<<"Invalid amount, please try again: ";
+        	cin.clear();
+	    	cin.ignore(1000,'\n');
+			continue;			
+			} else
+				break;
+    	}
 	}
 	
     if(amount>1){
@@ -222,31 +252,41 @@ void OrderList::takeOrder(){
     cout<<"3. ice tea 3 TL"<<endl;
     cout<<"4. fruit juice 3.5 TL"<<endl;
     cout<<"Press -1 for save your order"<<endl;
-    int dr;
-    
-    while(!(cin>>dr)){								//checking that the user has entered a integer
-		cout<<"You have entered an invalid choice"<<endl;
-		cin.clear();
-		cin.ignore(1000,'\n');
-	}
-    if(dr>4 || dr<-1)
-		cout<<"You have entered an invalid choice"<<endl;
-        
-    int drink[]={0,0,0,0};
-    if(dr<5 && dr>0)
-		drink[dr-1]++;
-	while(dr!=-1 && dr!=0){
-		if(!(cin>>dr)){							//checking that the user has entered a integer
-			cout<<"Invalid choice"<<endl<<endl;
+    int dr=1;
+	char w;
+	int *drink= new int[4];
+    drink[0]=0;
+    drink[1]=0;
+    drink[2]=0;
+    drink[3]=0;
+	while(dr!=0 && dr!=-1){
+		if(!(cin>>dr)){								//checking that the user has entered a integer
+			cout<<"You have entered an invalid choice"<<endl;
 			cin.clear();
 			cin.ignore(1000,'\n');
+			dr=1;
 			continue;
-		}else if(dr<5 && dr>0)
-			drink[dr-1]++;
-		else if(dr!=-1 && dr!=0)
+		}
+		if(cin.get(w)) {							//checking if user just entered integer
+        	if(w != '\n'){
 			cout<<"You have entered an invalid choice"<<endl;
+        	cin.clear();
+	    	cin.ignore(1000,'\n');
+			continue;			
+			}
+    	}
+    	if(dr>4 || dr<-1){
+    		cout<<"You have entered an invalid choice"<<endl;
+    		continue;
+		}
+		if(dr==-1 || dr==0)
+			break;
+    	
+		if(dr<5 && dr>0)
+			drink[dr-1]++;	
 	}
-    if(dr==-1){
+    
+	if(dr==-1){
         cout<<"Please enter your name:"<<endl;
         cin>>name;
         ord=new Order(name,phead,drink);		//calling Order constructor with 3 parameters
@@ -255,7 +295,8 @@ void OrderList::takeOrder(){
         cout<<"Please enter your name:"<<endl;
         cin>>name;
         ord=new Order(name,phead);              //calling Order constructor with 2 parameters
-    }
+    	delete[] drink;
+	}
     if(n==0){									//adding first order to order list
        setheadorder(ord);
        n++;
@@ -276,7 +317,7 @@ void OrderList::takeOrder(){
 
 //prints the main menu
 void OrderList::mainmenu(){
-    
+	
     int c;
     cout<<"Welcome to Unicorn Pizza!"<<endl;
     cout<<"1. Add an order"<<endl;
@@ -284,29 +325,39 @@ void OrderList::mainmenu(){
     cout<<"3. Deliver order"<<endl;
     cout<<"4. Exit"<<endl;
     cout<<"Choose what to do: ";
-    if(!(cin>>c)){							//checking that the user has entered a integer
+    if(!(cin>>c)){								//checking that the user has entered a integer
 		cout<<"Invalid choice"<<endl<<endl;
 		cin.clear();
 		cin.ignore(1000,'\n');
 		mainmenu();
 	}
+	char a;
+    if (cin.get(a)) {							//checking if user just entered integer
+        if(a != '\n'){
+			cout<<"Invalid choice"<<endl<<endl;
+        	cin.clear();
+	    	cin.ignore(1000,'\n');
+			mainmenu();
+			return;
+		}
+    }
     switch(c){
         case 1:
-			takeOrder();					//calling takeOrder function for taking the order
+			takeOrder();						//calling takeOrder function for taking the order
 			break;  
         case 2:
-			listOrders();					//calling listOrder function for printing the orders
+			listOrders();						//calling listOrder function for printing the orders
 			mainmenu();
 			break;
         case 3:
-			deliverOrders();				//calling deliverOrders function for delete an order
+			deliverOrders();					//calling deliverOrders function for delete an order
 			break;
         case 4:
 			cout<<"Goodbye..."<<endl;
 			break;
 		default:
 			cout<<"Invalid choice"<<endl<<endl;	
-			mainmenu();						//if the user enters an invalid option, back to the main menu 
+			mainmenu();							//if the user enters an invalid option, back to the main menu 
     }
 }
 
